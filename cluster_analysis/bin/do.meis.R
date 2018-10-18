@@ -79,9 +79,9 @@ do.meis = function(all,  refs, polyAFrac=0.5, meiScore=50,
   df.all$clipped.consensus.rc = rc(df.all$clipped.consensus)
   alignments_fwd = aligner(my.fa=df.all$clipped.consensus, ref=mobilome)
   alignments_rev = aligner(my.fa=df.all$clipped.consensus.rc, ref=mobilome, rc=T)
-  df.aligned = rbind.data.frame(data.frame(df.all, alignments_fwd,stringsAsFactors = F),
-                                data.frame(df.all, alignments_rev, stringsAsFactors = F) )
-  
+  df.aligned = rbind.data.frame(data.frame(df.all, alignments_fwd,stringsAsFactors = F, row.names=NULL),
+                                data.frame(df.all, alignments_rev, stringsAsFactors = F, row.names=NULL) )
+
   ## Make pretty output table
   df.aligned$coord = paste(df.all$RNAME, df.all$clipped_pos, sep=":")
   winners = as.data.frame(pick.winners(df.aligned,  pct_read_aligned=pctAlign, meiScore=meiScore) )
