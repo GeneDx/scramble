@@ -47,7 +47,7 @@ Building requires `HTSlib` and a few other dev packages (installation instructio
 Running
 -------
 SCRAMBle runs as a two-step process. First cluster_identifier is used to generate soft-clipped read cluster consensus
-sequences. Second, SCRAMBle-MEIs.R analyzes the cluster file for likely MEIs.
+sequences. Second, SCRAMBle-MEIs.R analyzes the cluster file for likely MEIs. Running SCRAMble on the test bam in the validation directory should take <1 minute for each step.
 
 To run SCRAMble cluster_identifier:
 
