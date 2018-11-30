@@ -30,7 +30,7 @@ Install dependencies (Debian/Ubuntu):
     $ Rscript -e "install.packages('stringr')"
     $ Rscript -e "source('https://bioconductor.org/biocLite.R'); biocLite('Biostrings')"
 
-To build the cluster_identifier:
+To build the cluster_identifier (estimated install time <5 minutes):
 
     $ cd cluster_identifier/src
     $ make
@@ -64,7 +64,7 @@ To run SCRAMBle-MEIs (with default settings):
 	
 Running with Docker
 -------------------
-SCRAMble is also distributed with a `Dockerfile`. Running SCRAMble using `docker`:
+SCRAMble is also distributed with a `Dockerfile`. Running SCRAMble using `docker` (estimated install time <10 minutes):
 
     $ git clone https://github.com/GeneDx/scramble.git
     $ cd scramble
