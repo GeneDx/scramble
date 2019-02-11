@@ -26,6 +26,24 @@ Install dependencies (Debian/Ubuntu):
         libhts-dev \
         r-base \
         zlib1g-dev
+
+Install dependencies (Centos):
+
+    $ yum install -y \
+          epel-release && \
+    $ yum install -y \
+          autoconf \
+          bzip2 \
+          bzip2-devel \
+          libcurl-devel \
+          libcrypto-devel \
+          openssl-devel \
+          R \
+          xz-devel \
+          zlib-devel
+
+Install R packages dependencies:
+
     $ Rscript -e "install.packages('optparse')"
     $ Rscript -e "install.packages('stringr')"
     $ Rscript -e "source('https://bioconductor.org/biocLite.R'); biocLite('Biostrings')"
@@ -37,24 +55,23 @@ To build the cluster_identifier (estimated install time <5 minutes):
 
 That should be it. It will create an executable named `build/cluster_identifier`.
  
-Building requires `HTSlib` and a few other dev packages (installation instruction for Debian/Ubuntu above). Please edit
-`cluster_identifier/src/Makefile` if `HTSlib` is not installed in the default location for Ubuntu 18.04
-`libhts-dev` package.
+Building requires `HTSlib` and a few other dev packages (installation instructions for Debian/Ubuntu/Centos above).
+Please edit `cluster_identifier/src/Makefile` if `HTSlib` is not installed in the default location.
 
-    /usr/include/htslib/*.h
-    /usr/lib/x86_64-linux-gnu/libhts.a
+    /usr/local/include/htslib/*.h
+    /usr/local/lib/libhts.a
 
 Running
 -------
-SCRAMBle runs as a two-step process. First cluster_identifier is used to generate soft-clipped read cluster consensus
-sequences. Second, SCRAMBle-MEIs.R analyzes the cluster file for likely MEIs. Running SCRAMble on the test bam in the validation directory should take <1 minute for each step.
+SCRAMble runs as a two-step process. First `cluster_identifier` is used to generate soft-clipped read cluster consensus
+sequences. Second, `SCRAMble-MEIs.R` analyzes the cluster file for likely MEIs. Running SCRAMble on the test bam in the validation directory should take <1 minute for each step.
 
 To run SCRAMble cluster_identifier:
 
     $ /path/to/scramble/cluster_identifier/src/build/cluster_identifier \
         /path/to/install_dir/scramble/validation/test.bam > /path/to/output/clusters.txt
 
-To run SCRAMBle-MEIs (with default settings):
+To run SCRAMble-MEIs (with default settings):
 
     $ Rscript --vanilla /path/to/scramble/cluster_analysis/bin/SCRAMble-MEIs.R \
         --out-name /path/to/output/out.txt 	\
@@ -91,7 +108,7 @@ The columns are as follows:
 | 4.   | Clipped read consensus                   |
 | 5.   | Anchored read consensus                  |
 	
-The output of SCRAMBle-MEIs.R is a tab delimited text file with MEI calls. If no MEIs are present an output file will still be produced with only the header.
+The output of SCRAMble-MEIs.R is a tab delimited text file with MEI calls. If no MEIs are present an output file will still be produced with only the header.
 The columns are as follows:
 
 |      |                               |                                                                                              |
