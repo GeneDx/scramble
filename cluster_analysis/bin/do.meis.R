@@ -14,10 +14,8 @@ aligner = function(my.fa, ref=mobilome, rc=F){
                               alignment_score=score(alignment),
                               percent_identity = pid(alignment), stringsAsFactors = F)
     alignment.df$percent_clipped_read_aligned = (alignment.df$alignment_len * 100) / nchar(my.fa)
-    mat = as.matrix(alignment)
-    alignment.df$starts = sapply(1:nrow(mat), function(j) min(which(mat[j,]!="-")))
-    alignment.df$stops  = sapply(1:nrow(mat), function(j) max(which(mat[j,]!="-")))
-    
+    alignment.df$starts = alignment@subject@range@start
+    alignment.df$stops = alignment.df$starts + alignment@subject@range@width - 1    
 
    alignment.df$MEI_Family = names(ref)[i]
 
