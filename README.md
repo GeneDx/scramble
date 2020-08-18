@@ -71,13 +71,16 @@ To run SCRAMble cluster_identifier:
     $ /path/to/scramble/cluster_identifier/src/build/cluster_identifier \
         /path/to/install_dir/scramble/validation/test.bam > /path/to/output/clusters.txt
 
-To run SCRAMble-MEIs (with default settings):
+To run SCRAMble-MEIs and SCRAMble-dels(with default settings):
 
     $ Rscript --vanilla /path/to/scramble/cluster_analysis/bin/SCRAMble-MEIs.R \
-        --out-name /path/to/output/out.txt 	\
+        --out-name /path/to/output/out 	\
         --cluster-file /path/to/output/clusters.txt \
         --install-dir /path/to/scramble/cluster_analysis/bin \
-        --mei-refs /path/to/scramble/cluster_analysis/resources/MEI_consensus_seqs.fa  
+        --mei-refs /path/to/scramble/cluster_analysis/resources/MEI_consensus_seqs.fa \
+        --blast-ref /path/to/scramble/cluster_analysis/resources/blast_refs/chr2.fa \
+        --eval-meis \
+        --eval-dels 
 	
 Running with Docker
 -------------------
@@ -90,10 +93,11 @@ SCRAMble is also distributed with a `Dockerfile`. Running SCRAMble using `docker
     # cluster_identifier \
         /app/validation/test.bam > clusters.txt
     # Rscript --vanilla /app/cluster_analysis/bin/SCRAMble-MEIs.R \
-        --out-name ${PWD}/out.txt \
+        --out-name ${PWD}/out \
         --cluster-file ${PWD}/clusters.txt \
         --install-dir /app/cluster_analysis/bin \
-        --mei-refs /app/cluster_analysis/resources/MEI_consensus_seqs.fa
+        --mei-refs /app/cluster_analysis/resources/MEI_consensus_seqs.fa \
+        --eval-meis
 
 Output
 ------
