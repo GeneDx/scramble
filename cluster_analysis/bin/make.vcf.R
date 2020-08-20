@@ -18,6 +18,7 @@ get_refs = function(blastRef, start, end){
 }
 ##############################
 write.scramble.vcf = function(outFile, del.winners){
+  ## TODO: write VCF for SCRAMble MEI calls too
   fixed = data.frame('#CHROM' = del.winners$CONTIG,
                      POS = del.winners$DEL.START,
                      ID = 'DEL',
