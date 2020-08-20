@@ -30,9 +30,9 @@ RUN Rscript -e "install.packages('stringr')"
 RUN Rscript -e "source('https://bioconductor.org/biocLite.R'); biocLite('Biostrings')"
 
 # install htslib
-RUN curl -LO https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2 && \
-    tar xfj htslib-1.9.tar.bz2 && \
-    cd htslib-1.9 && \
+RUN curl -LO https://github.com/samtools/htslib/releases/download/1.10.2/htslib-1.10.2.tar.bz2 && \
+    tar xfj htslib-1.10.2.tar.bz2 && \
+    cd htslib-1.10.2 && \
     autoheader && \
     autoconf && \
     ./configure && \
