@@ -44,7 +44,7 @@ RUN Rscript -e "install.packages('devtools')"
 RUN Rscript -e "install.packages('optparse')"
 RUN Rscript -e "install.packages('stringr')"
 RUN Rscript -e "install.packages('BiocManager')"
-RUN Rscript -e "BiocManager::install(c('Biostrings'))"
+RUN Rscript -e "BiocManager::install(c('Biostrings', 'Rsamtools'))"
 RUN Rscript -e "library(devtools); install_github('mhahsler/rBLAST')"
 
 # install scramble
