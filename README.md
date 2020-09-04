@@ -12,41 +12,35 @@ clusters. For how to build see the build section.
 Build
 -----
 
-Install dependencies (Debian/Ubuntu):
+Install dependencies (Ubuntu 20.04):
 
-    $ apt-get update
-    $ apt-get install -y  \
+    apt-get update
+    apt-get install -y  \
+        autoconf \
+        autogen \
         build-essential \
+        curl \
         libbz2-dev \
         libcurl4-openssl-dev \
+        libhts-dev \
         liblzma-dev \
         libncurses5-dev \
         libnss-sss \
         libssl-dev \
-        libhts-dev \
+        libxml2-dev \
+        ncbi-blast+ \
         r-base \
+        r-bioc-biostrings \
+        r-bioc-rsamtools \
+        r-cran-biocmanager \
+        r-cran-devtools \
+        r-cran-stringr \
+        r-cran-optparse \
         zlib1g-dev
-
-Install dependencies (Centos):
-
-    $ yum install -y \
-          epel-release && \
-    $ yum install -y \
-          autoconf \
-          bzip2 \
-          bzip2-devel \
-          libcurl-devel \
-          libcrypto-devel \
-          openssl-devel \
-          R \
-          xz-devel \
-          zlib-devel
 
 Install R packages dependencies:
 
-    $ Rscript -e "install.packages('optparse')"
-    $ Rscript -e "install.packages('stringr')"
-    $ Rscript -e "source('https://bioconductor.org/biocLite.R'); biocLite('Biostrings')"
+    Rscript -e "library(devtools); install_github('mhahsler/rBLAST')"
 
 To build the cluster_identifier (estimated install time <5 minutes):
 
@@ -54,12 +48,6 @@ To build the cluster_identifier (estimated install time <5 minutes):
     $ make
 
 That should be it. It will create an executable named `build/cluster_identifier`.
- 
-Building requires `HTSlib` and a few other dev packages (installation instructions for Debian/Ubuntu/Centos above).
-Please edit `cluster_identifier/src/Makefile` if `HTSlib` is not installed in the default location.
-
-    /usr/local/include/htslib/*.h
-    /usr/local/lib/libhts.a
 
 Running
 -------
