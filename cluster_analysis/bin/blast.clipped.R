@@ -14,8 +14,8 @@ blast.clipped = function(df, indelScore=80, pctAlign=90, blastRef){
   names(results) = c("query", "subject", "pct_identity", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore")
   results$qlen = results$qend - results$qstart + 1
   
-  ### filter blast results by length and bitscore
-  results = results[(results$qlen/results$length)>(pctAlign/100) & results$bitscore > indelScore,]
+  ### filter blast results by bitscore
+  results = results[results$bitscore > indelScore,]
   
   ##################################
   # compare to mapping of anchored portion of read
@@ -23,12 +23,15 @@ blast.clipped = function(df, indelScore=80, pctAlign=90, blastRef){
     chr=df$RNAME,
     reference.start=df$clipped_pos,
     reference.stop=df$clipped_pos,
+    clipped_seq=df$clipped.consensus,
     rname_clippedPos_Orientation_ReadSide=df$rname_clippedPos_Orientation_ReadSide,
     counts = df$counts,
     strand="+",
     stringsAsFactors = F)
   reference.clusters = merge(reference.clusters, results, by.x="rname_clippedPos_Orientation_ReadSide", by.y="query", all.x=T)
 
+  # filter by percent length of alignment
+  referece.clusters = reference.clusters[(nchar(reference.clusters$clipped_seq) / reference.clusters$length) > pctAlign,]
   return(reference.clusters)
 }
 ##################################

@@ -73,7 +73,7 @@ To run SCRAMble cluster_identifier:
 
 To run SCRAMble-MEIs and SCRAMble-dels(with default settings):
 
-    $ Rscript --vanilla /path/to/scramble/cluster_analysis/bin/SCRAMble-MEIs.R \
+    $ Rscript --vanilla /path/to/scramble/cluster_analysis/bin/SCRAMble.R \
         --out-name /path/to/output/out 	\
         --cluster-file /path/to/output/clusters.txt \
         --install-dir /path/to/scramble/cluster_analysis/bin \
@@ -91,13 +91,22 @@ SCRAMble is also distributed with a `Dockerfile`. Running SCRAMble using `docker
     $ docker build -t scramble:latest .
     $ docker run -it --rm scramble:latest bash
     # cluster_identifier \
-        /app/validation/test.bam > clusters.txt
-    # Rscript --vanilla /app/cluster_analysis/bin/SCRAMble-MEIs.R \
+        /app/validation/test_mei.bam > /app/validation/test_mei.clusters.txt
+    # Rscript --vanilla /app/cluster_analysis/bin/SCRAMble.R \
         --out-name ${PWD}/out \
-        --cluster-file ${PWD}/clusters.txt \
+        --cluster-file /app/validation/test_mei.clusters.txt \
         --install-dir /app/cluster_analysis/bin \
         --mei-refs /app/cluster_analysis/resources/MEI_consensus_seqs.fa \
         --eval-meis
+
+    # cluster_identifier \
+        /app/validation/test_del.bam > /app/validation/test_del.clusters.txt
+    # Rscript --vanilla /app/cluster_analysis/bin/SCRAMble.R \
+        --out-name ${PWD}/out \
+        --cluster-file /app/validation/test_del.clusters.txt \
+        --install-dir /app/cluster_analysis/bin \
+        --ref /app/validation/test.fa \
+        --eval-dels  
 
 Output
 ------
@@ -112,7 +121,7 @@ The columns are as follows:
 | 4.   | Clipped read consensus                   |
 | 5.   | Anchored read consensus                  |
 	
-The output of SCRAMble-MEIs.R is a tab delimited text file with MEI calls. If no MEIs are present an output file will still be produced with only the header.
+The `<out-name>_MEIs.txt` output is a tab delimited text file with MEI calls. If no MEIs are present an output file will still be produced with only the header.
 The columns are as follows:
 
 |      |                               |                                                                                              |
@@ -134,9 +143,39 @@ The columns are as follows:
 | 15.  | TSD                           | Target site duplication sequence if polyA clipped read cluster found                         |
 | 16.  | TSD_length                    | Length of target site duplication if polyA clipped read cluster found                        |
 
+
+Calling `SCRAMble.R` with `--eval-dels` produced a VCF and a tab delimted file. The `<out-name>_PredictedDeletions.txt` output is a tab delimited text file with deletion calls. If no deletions are present an output file will still be produced with only the header.
+The columns are as follows:
+
+|      |                               |                                                                                              |
+| ---: | ----------------------------- | -------------------------------------------------------------------------------------------- |
+| 1.   | CONTIG                      | Chromosome                                           |
+| 2.   | DEL.START                    | Deletion start coordinate (0-based)       |
+| 3.   | DEL.END                      | Deletion end coordinate (0-based)         |
+| 4.   | REF.ANCHOR.BASE              | Reference based at deletion start               |
+| 5.   | DEL.LENGTH                   | Deletion length |
+| 6.   | RIGHT.CLUSTER                | Name of right cluster  |
+| 7.   | RIGHT.CLUSTER.COUNTS    | Number of supporting reads in right cluster |
+| 8.   | LEFT.CLUSTER              | Name of left cluster                             |
+| 9.   | LEFT.CLUSTER.COUNTS                  | Number of supporting reads in left cluster             |
+| 10.  | LEN.RIGHT.ALIGNMENT                  | Length of right-clipped consensus sequence involved in alignment       |
+| 11.  | SCORE.RIGHT.ALIGNMENT                   | BLAST alignment bitscore for right-clipped consensus       |
+| 12.  | PCT.COV.RIGHT.ALIGNMENT                | Percent length of right-clipped consensus involved in alignment                                             |
+| 13.  | PCT.IDENTITY.RIGHT.ALIGNMENT                     | Percent identity of right-clipped consensus in alignment                   |
+| 14.  | LEN.LEFT.ALIGNMENT         | Length of left-clipped consensus sequence involved in alignment       |
+| 15.  | SCORE.LEFT.ALIGNMENT                           | BLAST alignment bitscore for left-clipped consensus       |                         |
+| 16.  | PCT.COV.LEFT.ALIGNMENT                    | Percent length of left-clipped consensus involved in alignment                           
+| 17.  | PCT.IDENTITY.LEFT.ALIGNMENT                    | Percent identity of right-clipped consensus in alignment                   |   
+| 18.  | INS.SIZE                    | Length of insert within deleted sequence (for two-end deletions only)
+| 19.  | INS.SEQ                    | Inserted sequence (for two-end deletions only)
+| 20.  | RIGHT.CLIPPED.SEQ                    | Clipped consensus sequence for right-clipped cluster
+| 21.  | LEFT.CLIPPED.SEQ                    | Clipped consensus sequence for left-clipped cluster
+
+
+
 R Dependencies
 --------------
-SCRAMBLE-MEIs.R was developed on R version 3.1.1 (2014-07-10) and uses the following libraries:
+SCRAMBLE.R was developed on R version 3.1.1 (2014-07-10) and uses the following libraries:
 
     [1] Biostrings_2.34.1   XVector_0.6.0       IRanges_2.0.1
     [4] S4Vectors_0.4.0     BiocGenerics_0.12.1 stringr_0.6.2

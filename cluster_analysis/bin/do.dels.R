@@ -113,14 +113,13 @@ two.end.dels = function(df, minDelLen = 50, indelScore){
 ## ONE END DELETIONS USING BLAST
 #BLAST clipped sequence to reference. Keep highest scoring alignments that are closest to the originating read.
 #################################
-one.end.dels=function(hits, minDelLen=50){
+one.end.dels=function(df, hits, minDelLen=50){
 
   if(nrow(hits)>0){
     hits$downstream = sapply(1:nrow(hits), function(i) ifelse(hits$dist.to.alignment.start[i]>0, T, F) )
   }else{
     hits$downstream = as.logical(NULL)
   }
-  
   
   hits$clipped = gsub("^.*_\\d.*_", "", hits$rname_clippedPos_Orientation_ReadSide)
   hits$pos = as.integer(gsub("(^.*_)(\\d.*)(_.*$)", "\\2", hits$rname_clippedPos_Orientation_ReadSide))
@@ -133,13 +132,13 @@ one.end.dels=function(hits, minDelLen=50){
                 (hits$clipped=="right" & hits$strand=="-" & !hits$downstream & hits$aligned.strand<0) |
                 (hits$clipped=="left" & hits$strand=="+" & !hits$downstream & hits$aligned.strand>0) |
                 (hits$clipped=="left" & hits$strand=="-" & hits$downstream & hits$aligned.strand<0),]
-  
+
   # add back info about clipped clusters
   hits$counts = df$counts[match(hits$rname_clippedPos_Orientation_ReadSide, df$rname_clippedPos_Orientation_ReadSide)]
   hits$clipped.consensus = df$clipped.consensus[match(hits$rname_clippedPos_Orientation_ReadSide, df$rname_clippedPos_Orientation_ReadSide)]
   hits$anchored.consensus = df$anchored.consensus[match(hits$rname_clippedPos_Orientation_ReadSide, df$rname_clippedPos_Orientation_ReadSide)]
 
-  ### write results
+    ### write results
   alignments = data.frame(CONTIG = character(),
                           DEL.START = character(),
                           DEL.END = character(),
@@ -165,7 +164,6 @@ one.end.dels=function(hits, minDelLen=50){
   if(nrow(hits)>0){
     for (i in 1:nrow(hits)){
       del.len = min(c(abs(hits$dist.to.alignment.start[i] ), abs(hits$dist.to.alignment.end[i])))
-      
       if(hits$downstream[i]){
         del.start = hits$reference.start[i]
         del.stop = del.start + del.len - 1
@@ -173,7 +171,6 @@ one.end.dels=function(hits, minDelLen=50){
         del.stop = hits$reference.start[i]
         del.start = del.stop - del.len + 1  
       }
-      
       alignments = rbind.data.frame(alignments, data.frame(
         CONTIG = hits$chr[i],
         DEL.START = del.start,
@@ -198,7 +195,6 @@ one.end.dels=function(hits, minDelLen=50){
         LEFT.CLIPPED.SEQ = toupper(ifelse(hits$clipped[i]=="left", toupper(hits$clipped.consensus[i]), NA)), stringsAsFactors = F))
     }
   }
-
   alignments$DEL.LENGTH = as.integer(alignments$DEL.LENGTH)
   alignments = alignments[alignments$DEL.LENGTH >= minDelLen,]
   return(alignments)
@@ -224,7 +220,8 @@ do.dels = function(df,indelScore, minDelLen=50, pctAlign=90, blastRef){
   cat("Number of best alignments:", nrow(hits), "\n")
 
   two.end.del.winners=two.end.dels(df, minDelLen, indelScore)
-  one.end.del.winners=one.end.dels(hits, minDelLen=minDelLen)
+  one.end.del.winners=one.end.dels(df, hits, minDelLen=minDelLen)
+  print('finished one end dels')
   
   # keep only one-end deletions that are NOT included in the two-del deletions
   all.delWinners = rbind.data.frame(two.end.del.winners, one.end.del.winners[!one.end.del.winners$RIGHT.CLUSTER %in% two.end.del.winners$RIGHT.CLUSTER & !one.end.del.winners$LEFT.CLUSTER %in% two.end.del.winners$LEFT.CLUSTER,])
