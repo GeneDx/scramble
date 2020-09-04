@@ -36,8 +36,7 @@ parser <- add_option(parser, c("--mei-refs"), type="character",
                      default="~/scramble/cluster_analysis/resources/MEI_consensus_seqs.fa",
                      dest="mei.ref.file", help="full path to MEI reference file (fasta format) [default %default]")
 parser <- add_option(parser, c("-r", "--ref"), type="character",
-                     default="~/scramble/cluster_analysis/resources/blast_refs/chr2.fa",
-                     dest="ref", help="reference file (fasta format) [default %default]")
+                     default=NULL, dest="ref", help="reference file (fasta format) [default %default]")
 ## what to evaluate
 parser <- add_option(parser, c("--eval-meis"), action="store_true", default=FALSE,
                      type="logical", help="evaluate meis")
@@ -104,24 +103,18 @@ if(is.null(blastRef)){
   source('make.vcf.R')
   vcf.header = make.vcf.header(blastRef)
   
-  # write mei results to fixed data frame
+  # get mei results to fixed data frame
   if(meis){
-    if(nrow(mei.winners) > 0){
-      source('make.vcf.R')
-      mei.fixed = write.scramble.vcf(winners=mei.winners, blastRef=blastRef,  meis=meis)
-    }else{
-      mei.fixed = NULL
-    }
+    mei.fixed = write.scramble.vcf(winners=mei.winners, blastRef=blastRef,  meis=meis)
+  }else{
+    mei.fixed = NULL
   }
   
-  # write del results to fixed data frame
+  # get del results to fixed data frame
   if(deletions){
-    if(nrow(del.winners) > 0){
-      source('make.vcf.R')
-      del.fixed = write.scramble.vcf(del.winners, meis=F, blastRef=blastRef)
-    }else{
-      del.fixed = NULL
-    }
+    del.fixed = write.scramble.vcf(del.winners, meis=F, blastRef=blastRef)
+  }else{
+    del.fixed = NULL
   }
   
   # combine header, del, mei results into VCF

@@ -69,16 +69,16 @@ sequences. Second, `SCRAMble-MEIs.R` analyzes the cluster file for likely MEIs. 
 To run SCRAMble cluster_identifier:
 
     $ /path/to/scramble/cluster_identifier/src/build/cluster_identifier \
-        /path/to/install_dir/scramble/validation/test.bam > /path/to/output/clusters.txt
+        /path/to/install_dir/scramble/validation/test.bam > /path/to/output/test.clusters.txt
 
 To run SCRAMble-MEIs and SCRAMble-dels(with default settings):
 
     $ Rscript --vanilla /path/to/scramble/cluster_analysis/bin/SCRAMble.R \
-        --out-name /path/to/output/out 	\
-        --cluster-file /path/to/output/clusters.txt \
+        --out-name /path/to/output/test 	\
+        --cluster-file /path/to/output/test.clusters.txt \
         --install-dir /path/to/scramble/cluster_analysis/bin \
         --mei-refs /path/to/scramble/cluster_analysis/resources/MEI_consensus_seqs.fa \
-        --blast-ref /path/to/scramble/cluster_analysis/resources/blast_refs/chr2.fa \
+        --ref /path/to/scramble/validation/test.fa \
         --eval-meis \
         --eval-dels 
 	
@@ -91,22 +91,16 @@ SCRAMble is also distributed with a `Dockerfile`. Running SCRAMble using `docker
     $ docker build -t scramble:latest .
     $ docker run -it --rm scramble:latest bash
     # cluster_identifier \
-        /app/validation/test_mei.bam > /app/validation/test_mei.clusters.txt
+        /app/validation/test.bam > /app/validation/test.clusters.txt
     # Rscript --vanilla /app/cluster_analysis/bin/SCRAMble.R \
-        --out-name ${PWD}/out \
-        --cluster-file /app/validation/test_mei.clusters.txt \
+        --out-name ${PWD}/test \
+        --cluster-file /app/validation/test.clusters.txt \
         --install-dir /app/cluster_analysis/bin \
         --mei-refs /app/cluster_analysis/resources/MEI_consensus_seqs.fa \
+        --ref /app/validation/test.fa \
+        --eval-dels \
         --eval-meis
 
-    # cluster_identifier \
-        /app/validation/test_del.bam > /app/validation/test_del.clusters.txt
-    # Rscript --vanilla /app/cluster_analysis/bin/SCRAMble.R \
-        --out-name ${PWD}/out \
-        --cluster-file /app/validation/test_del.clusters.txt \
-        --install-dir /app/cluster_analysis/bin \
-        --ref /app/validation/test.fa \
-        --eval-dels  
 
 Output
 ------
@@ -121,7 +115,7 @@ The columns are as follows:
 | 4.   | Clipped read consensus                   |
 | 5.   | Anchored read consensus                  |
 	
-The `<out-name>_MEIs.txt` output is a tab delimited text file with MEI calls. If no MEIs are present an output file will still be produced with only the header.
+Calling `SCRAMble.R` with `--eval-meis` produces a tab delimted file. If a reference `.fa` file is provided, then a VCF is produced as well. The `<out-name>_MEIs.txt` output is a tab delimited text file with MEI calls. If no MEIs are present an output file will still be produced with only the header.
 The columns are as follows:
 
 |      |                               |                                                                                              |

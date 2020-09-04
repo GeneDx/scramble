@@ -44,7 +44,7 @@ write.scramble.vcf = function(winners, blastRef, meis=F){
   library(stringr)
   ## TODO: write VCF for SCRAMble MEI calls too
   
-  if(!meis){
+  if(!meis & nrow(winners) > 0){
     fixed = data.frame('#CHROM' = winners$CONTIG,
                        POS = winners$DEL.START,
                        ID = 'DEL',
@@ -60,7 +60,7 @@ write.scramble.vcf = function(winners, blastRef, meis=F){
     fixed$INFO = paste('SVTYPE=', fixed$svtype, ';', 'SVLEN=', fixed$svlen, ';', 'END=', fixed$end, sep='')
   }
   
-  if(meis){
+  if(meis & nrow(winners) > 0){
     fixed = data.frame('#CHROM' =  gsub("(.*):(\\d*)$", "\\1", winners$Insertion),
                        POS = as.integer(gsub("(.*):(\\d*)$", "\\2", winners$Insertion)),
                        ID = 'INS:ME',
@@ -78,5 +78,20 @@ write.scramble.vcf = function(winners, blastRef, meis=F){
 
     
   vcf.cols = c('#CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO')
-  return(fixed[,vcf.cols])
+  if(nrow(fixed) > 0){
+    return(fixed[,vcf.cols])
+  }else{
+    fixed = data.frame('#CHROM' = character(),
+               POS = character(),
+               ID = character(),
+               REF = character(),
+               ALT = character(),
+               QUAL = character(),
+               FILTER = character(),
+               INFO = character(),
+               check.names = F)
+    return(fixed)
+  }
 }
+  
+  
