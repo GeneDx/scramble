@@ -1,8 +1,7 @@
 ## Compilation options/libs
 CC = gcc 
 CFLAGS = -Wall -O2
-INCLUDES = -I/usr/local/include/htslib
-LIBS = /usr/local/lib/libhts.a -lz -lpthread -llzma -lbz2 -lcurl -lcrypto
+LIBS = -lz -lpthread -llzma -lbz2 -lcurl -lcrypto -lhts
 
 ## source and exe names
 VERSION = 0.1.0
