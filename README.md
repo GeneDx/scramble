@@ -167,15 +167,6 @@ The columns are as follows:
 
 
 
-R Dependencies
---------------
-SCRAMBLE.R was developed on R version 3.1.1 (2014-07-10) and uses the following libraries:
-
-    [1] Biostrings_2.34.1   XVector_0.6.0       IRanges_2.0.1
-    [4] S4Vectors_0.4.0     BiocGenerics_0.12.1 stringr_0.6.2
-    [7] optparse_1.4.4
-
-
 Disclaimers
 -----------
 In theory, SCRAMble should work well on any MEI reference fasta sequences, however, it has only been tested on the
