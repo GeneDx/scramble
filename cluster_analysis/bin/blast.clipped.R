@@ -47,6 +47,7 @@ best.hits = function(reference.clusters){
       hits$dist.to.alignment.end   = hits$send - hits$reference.start
       hits$sign.same = sign(hits$dist.to.alignment.end) == sign(hits$dist.to.alignment.start)
       hits = hits[hits$sign.same,] # remove alignments that overlapped anchored portion of read
+      if(nrow(hits)>0){return(hits)}
       hits$start.dist = abs(hits$sstart - hits$reference.start)
       
       ### keep hits with highest score, closest to clipped read
