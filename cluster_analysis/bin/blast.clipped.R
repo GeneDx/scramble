@@ -40,21 +40,22 @@ best.hits = function(reference.clusters){
   hits = reference.clusters[!is.na(reference.clusters$subject) & reference.clusters$chr == reference.clusters$subject,]
   hits$hit.len = hits$send-hits$sstart
   
-    if(nrow(hits)>0){
-      hits$pct_aligned = 100*(hits$qlen )/hits$length
-      hits$aligned.strand = sign(hits$send-hits$sstart)
-      hits$dist.to.alignment.start = hits$sstart - hits$reference.start
-      hits$dist.to.alignment.end   = hits$send - hits$reference.start
-      hits$sign.same = sign(hits$dist.to.alignment.end) == sign(hits$dist.to.alignment.start)
-      hits = hits[hits$sign.same,] # remove alignments that overlapped anchored portion of read
-      if(nrow(hits)>0){return(hits)}
-      hits$start.dist = abs(hits$sstart - hits$reference.start)
-      
-      ### keep hits with highest score, closest to clipped read
-      hits$min.dist = sapply(1:nrow(hits), function(i) min(c(abs(hits$dist.to.alignment.end[i]), abs(hits$dist.to.alignment.start[i]))) )
-      hits = hits[order(hits$rname_clippedPos_Orientation_ReadSide, hits$evalue, hits$min.dist),]
-      hits = hits[!duplicated(hits$rname_clippedPos_Orientation_ReadSide),]
-    }
+  if(nrow(hits)>0){
+    hits$pct_aligned = 100*(hits$qlen )/hits$length
+    hits$aligned.strand = sign(hits$send-hits$sstart)
+    hits$dist.to.alignment.start = hits$sstart - hits$reference.start
+    hits$dist.to.alignment.end   = hits$send - hits$reference.start
+    hits$sign.same = sign(hits$dist.to.alignment.end) == sign(hits$dist.to.alignment.start)
+    hits = hits[hits$sign.same,] # remove alignments that overlapped anchored portion of read
+    if(nrow(hits)==0){return(hits)}
+    hits$start.dist = abs(hits$sstart - hits$reference.start)
+    
+    ### keep hits with highest score, closest to clipped read
+    hits$min.dist = sapply(1:nrow(hits), function(i) min(c(abs(hits$dist.to.alignment.end[i]), abs(hits$dist.to.alignment.start[i]))) )
+    hits = hits[order(hits$rname_clippedPos_Orientation_ReadSide, hits$evalue, hits$min.dist),]
+    hits = hits[!duplicated(hits$rname_clippedPos_Orientation_ReadSide),]
+    return(hits)
+  }
   return(hits)
 }
 ###########################
