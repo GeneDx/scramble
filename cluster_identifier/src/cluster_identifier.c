@@ -15,7 +15,7 @@
 */
 
 #define AUTHOR "Kevin Galens"
-#define VERSION "0.1.1"
+#define VERSION "1.0.1"
 #define PROG "cluster_identifier"
 
 // Holds the settings for this run
