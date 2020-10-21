@@ -1,10 +1,9 @@
 ## Compilation options/libs
-CC = gcc 
+CC = gcc
 CFLAGS = -Wall -O2
 LIBS = -lz -lpthread -llzma -lbz2 -lcurl -lcrypto -lhts
 
 ## source and exe names
-VERSION = 0.1.0
 SRC = cluster_identifier.c
 BASEMAIN = cluster_identifier
 BUILD_DIR = build
