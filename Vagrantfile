@@ -36,5 +36,7 @@ Vagrant.configure("2") do |config|
       r-cran-stringr \
       r-cran-optparse \
       zlib1g-dev
+    Rscript -e "library(devtools); install_github('mhahsler/rBLAST')"
   SHELL
+
 end
