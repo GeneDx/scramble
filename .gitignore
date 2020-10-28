@@ -40,3 +40,5 @@ cluster_identifier/src/build/
 
 # perl xsubs
 _Deparsed_XSubs.pm
+
+.vagrant/
