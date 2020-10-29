@@ -37,6 +37,8 @@ parser <- add_option(parser, c("--mei-refs"), type="character",
                      dest="mei.ref.file", help="full path to MEI reference file (fasta format) [default %default]")
 parser <- add_option(parser, c("-r", "--ref"), type="character",
                      default=NULL, dest="ref", help="reference file (fasta format) [default %default]")
+parser <- add_option(parser, c("--no-vcf"), action="store_true", default=FALSE,
+                     type="logical", help="evaluate meis")
 ## what to evaluate
 parser <- add_option(parser, c("--eval-meis"), action="store_true", default=FALSE,
                      type="logical", help="evaluate meis")
@@ -57,6 +59,8 @@ polyAFrac       = opt[["polyAFrac"]]
 pctAlign        = opt[["pctAlign"]]  
 polyAdist       = opt[["polyAdist"]] 
 blastRef        = opt[["ref"]]
+no.vcf          = opt[["no-vcf"]]
+
 # what to evaluate
 meis        = opt[["eval-meis"]]
 deletions   = opt[["eval-dels"]]
@@ -97,35 +101,37 @@ if(deletions){
 }
 ##############################
 ## WRITE VCF
-if(is.null(blastRef)){
-  warning("A reference .fa file is required for writing results to VCF")
-}else{
-  source('make.vcf.R')
-  vcf.header = make.vcf.header(blastRef)
-  
-  # get mei results to fixed data frame
-  if(meis){
-    mei.fixed = write.scramble.vcf(winners=mei.winners, blastRef=blastRef,  meis=meis)
+if(!no.vcf){
+  if(is.null(blastRef)){
+    warning("A reference .fa file is required for writing results to VCF")
   }else{
-    mei.fixed = NULL
+    source('make.vcf.R')
+    cat('Writing VCF file\n')
+    vcf.header = make.vcf.header(blastRef)
+    
+    # get mei results to fixed data frame
+    if(meis){
+      mei.fixed = write.scramble.vcf(winners=mei.winners, blastRef=blastRef,  meis=meis)
+    }else{
+      mei.fixed = NULL
+    }
+    
+    # get del results to fixed data frame
+    if(deletions){
+      del.fixed = write.scramble.vcf(del.winners, meis=F, blastRef=blastRef)
+    }else{
+      del.fixed = NULL
+    }
+    
+    # combine header, del, mei results into VCF
+    write.table(vcf.header, paste(outFilePrefix, ".vcf", sep=""), row.names=F, col.names=F, quote=F)
+    
+    fixed = rbind.data.frame(mei.fixed, del.fixed)
+    fixed = fixed[order(fixed[,'#CHROM'], fixed$POS), ]
+    
+    suppressWarnings(write.table(fixed, paste(outFilePrefix, ".vcf", sep=""), row.names=F, col.names=T, quote=F, append=T, sep='\t'))
   }
-  
-  # get del results to fixed data frame
-  if(deletions){
-    del.fixed = write.scramble.vcf(del.winners, meis=F, blastRef=blastRef)
-  }else{
-    del.fixed = NULL
-  }
-  
-  # combine header, del, mei results into VCF
-  write.table(vcf.header, paste(outFilePrefix, ".vcf", sep=""), row.names=F, col.names=F, quote=F)
-  
-  fixed = rbind.data.frame(mei.fixed, del.fixed)
-  fixed = fixed[order(fixed[,'#CHROM'], fixed$POS), ]
-  
-  suppressWarnings(write.table(fixed, paste(outFilePrefix, ".vcf", sep=""), row.names=F, col.names=T, quote=F, append=T, sep='\t'))
 }
-
 
 
 
