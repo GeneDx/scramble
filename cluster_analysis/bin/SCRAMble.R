@@ -106,30 +106,29 @@ if(!no.vcf){
     warning("A reference .fa file is required for writing results to VCF")
   }else{
     source('make.vcf.R')
-    cat('Writing VCF file\n')
-    vcf.header = make.vcf.header(blastRef)
-    
+    message("Writing VCF file to ", paste0(outFilePrefix, ".vcf"), "...")
+
+    #Load reference fasta
+    suppressMessages(require(Rsamtools))
+    fa = getSeq(open(FaFile(blastRef)))
+    #Contig ID = FASTA ID until first space character
+    names(fa) = gsub(" .*", "", names(fa))
+
+    write.table(make.vcf.header(fa, blastRef), paste0(outFilePrefix, ".vcf"), row.names=F, col.names=F, quote=F)
+
     # get mei results to fixed data frame
-    if(meis){
-      mei.fixed = write.scramble.vcf(winners=mei.winners, blastRef=blastRef,  meis=meis)
-    }else{
-      mei.fixed = NULL
-    }
+    mei.fixed = NULL
+    print(mei.winners)
+    if (meis) mei.fixed = write.scramble.vcf(mei.winners, fa, T)
     
     # get del results to fixed data frame
-    if(deletions){
-      del.fixed = write.scramble.vcf(del.winners, meis=F, blastRef=blastRef)
-    }else{
-      del.fixed = NULL
-    }
-    
-    # combine header, del, mei results into VCF
-    write.table(vcf.header, paste(outFilePrefix, ".vcf", sep=""), row.names=F, col.names=F, quote=F)
+    del.fixed = NULL
+    if (deletions) del.fixed = write.scramble.vcf(del.winners, fa, F)
     
     fixed = rbind.data.frame(mei.fixed, del.fixed)
     fixed = fixed[order(fixed[,'#CHROM'], fixed$POS), ]
-    
-    suppressWarnings(write.table(fixed, paste(outFilePrefix, ".vcf", sep=""), row.names=F, col.names=T, quote=F, append=T, sep='\t'))
+    suppressWarnings(write.table(fixed, paste0(outFilePrefix, ".vcf"), row.names=F, col.names=T, quote=F, append=T, sep='\t'))
+    message("Done.")
   }
 }
 
