@@ -14,14 +14,19 @@ get_score = function(right_score, left_score){
 get_refs = function(blastRef, chrom, start, end){
   library(Rsamtools)
   fa = getSeq(open(FaFile(blastRef)))
+  #Contig ID = FASTA ID until first space character
+  names(fa) = gsub(" .*", "", names(fa))
   fa = fa[chrom]
   seq = subseq(fa, start=start, end=end)
   return(as.vector(seq))
 }
 ##############################
 make.vcf.header = function(blastRef=None){
-  library(Biostrings)
-  fa = readDNAStringSet(blastRef)
+  library(Rsamtools)
+  fa = getSeq(open(FaFile(blastRef)))
+  #Contig ID = FASTA ID until first space character
+  names(fa) = gsub(" .*", "", names(fa))
+
   contigs = names(fa)
   
   header = c('##fileformat=VCFv4.2',
@@ -43,7 +48,7 @@ make.vcf.header = function(blastRef=None){
 write.scramble.vcf = function(winners, blastRef, meis=F){
   library(stringr)
   ## TODO: write VCF for SCRAMble MEI calls too
-  
+ 
   if(!meis & nrow(winners) > 0){
     fixed = data.frame('#CHROM' = winners$CONTIG,
                        POS = winners$DEL.START,
@@ -93,5 +98,3 @@ write.scramble.vcf = function(winners, blastRef, meis=F){
     return(fixed)
   }
 }
-  
-  
