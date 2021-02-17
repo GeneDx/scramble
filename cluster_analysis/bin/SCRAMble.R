@@ -118,7 +118,6 @@ if(!no.vcf){
 
     # get mei results to fixed data frame
     mei.fixed = NULL
-    print(mei.winners)
     if (meis) mei.fixed = write.scramble.vcf(mei.winners, fa, T)
     
     # get del results to fixed data frame
