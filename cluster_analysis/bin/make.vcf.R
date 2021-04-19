@@ -11,19 +11,17 @@ get_score = function(right_score, left_score){
   }
 }
 ##############################
-get_refs = function(blastRef, chrom, start, end){
-  library(Rsamtools)
-  fa = getSeq(open(FaFile(blastRef)))
+get_refs = function(fa, chrom, start, end){
+  if (missing(fa) | missing(chrom) | missing(start) | missing(end)) return(NULL)
+  if (! chrom %in% names(fa)) return(NULL)
   fa = fa[chrom]
   seq = subseq(fa, start=start, end=end)
   return(as.vector(seq))
 }
 ##############################
-make.vcf.header = function(blastRef=None){
-  library(Biostrings)
-  fa = readDNAStringSet(blastRef)
+make.vcf.header = function(fa, blastRef=None){
+  if (missing(fa)) return(NULL)
   contigs = names(fa)
-  
   header = c('##fileformat=VCFv4.2',
              paste('##reference=', blastRef, sep=''),
              paste('##contig=<ID=', contigs, '>', sep=""),
@@ -40,17 +38,19 @@ make.vcf.header = function(blastRef=None){
 }
 
 ##############################
-write.scramble.vcf = function(winners, blastRef, meis=F){
-  library(stringr)
-  ## TODO: write VCF for SCRAMble MEI calls too
-  
-  if(!meis & nrow(winners) > 0){
+write.scramble.vcf = function(winners, fa, meis=F){
+
+  #argument checks
+  if (is.null(winners)) return(NULL)
+  if (nrow(winners) == 0) return(NULL)
+
+  if(!meis){
     fixed = data.frame('#CHROM' = winners$CONTIG,
                        POS = winners$DEL.START,
                        ID = 'DEL',
                        QUAL = sapply(1:nrow(winners), function(i) get_score(winners$SCORE.RIGHT.ALIGNMENT[i], winners$SCORE.LEFT.ALIGNMENT[i])),
                        FILTER = 'PASS',
-                       REF = sapply(1:nrow(winners), function(i) get_refs(blastRef, winners$CONTIG[i], winners$DEL.START[i], winners$DEL.END[i] + 1)),
+                       REF = sapply(1:nrow(winners), function(i) get_refs(fa, winners$CONTIG[i], winners$DEL.START[i], winners$DEL.END[i] + 1)),
                        svtype = 'DEL',
                        stringsAsFactors = F, check.names = F)
     
@@ -58,9 +58,7 @@ write.scramble.vcf = function(winners, blastRef, meis=F){
     fixed$svlen = nchar(fixed$REF)
     fixed$end = fixed$POS + fixed$svlen
     fixed$INFO = paste('SVTYPE=', fixed$svtype, ';', 'SVLEN=', fixed$svlen, ';', 'END=', fixed$end, sep='')
-  }
-  
-  if(meis & nrow(winners) > 0){
+  } else {
     fixed = data.frame('#CHROM' =  gsub("(.*):(\\d*)$", "\\1", winners$Insertion),
                        POS = as.integer(gsub("(.*):(\\d*)$", "\\2", winners$Insertion)),
                        ID = 'INS:ME',
@@ -73,10 +71,9 @@ write.scramble.vcf = function(winners, blastRef, meis=F){
     fixed$start = fixed$POS
     fixed$end = fixed$POS+1
     fixed$INFO = paste('MEINFO', paste(fixed$name, fixed$start, fixed$end, fixed$polarity, sep=','), sep='=')
-    fixed$REF = sapply(1:nrow(fixed), function(i) get_refs(blastRef, fixed[i, '#CHROM'], fixed$POS[i], fixed$POS[i]))
+    fixed$REF = sapply(1:nrow(fixed), function(i) get_refs(fa, fixed[i, '#CHROM'], fixed$POS[i], fixed$POS[i]))
   }   
 
-    
   vcf.cols = c('#CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO')
   if(nrow(fixed) > 0){
     return(fixed[,vcf.cols])
@@ -93,5 +90,3 @@ write.scramble.vcf = function(winners, blastRef, meis=F){
     return(fixed)
   }
 }
-  
-  
