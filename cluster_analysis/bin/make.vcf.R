@@ -12,8 +12,8 @@ get_score = function(right_score, left_score){
 }
 ##############################
 get_refs = function(fa, chrom, start, end){
-  if (missing(fa) | missing(chrom) | missing(start) | missing(end)) return(NULL)
-  if (! chrom %in% names(fa)) return(NULL)
+  if (missing(fa) | missing(chrom) | missing(start) | missing(end)) return('N')
+  if (! chrom %in% names(fa)) return('N')
   fa = fa[chrom]
   seq = subseq(fa, start=start, end=end)
   return(as.vector(seq))
