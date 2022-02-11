@@ -76,6 +76,12 @@ for(i in 1:length(objects)){
 }
 source("usefulFunctions.R")
 ###############################
+## if no eval options provided log and exit
+if(!meis & !deletions){
+    cat('No structural variants to evaluate. Please use flags --eval-meis and --eval-dels to indicate analysis.')
+    stop()
+}
+###############################
 ## READ IN DATA AND PRE-PROCESS
 all = read.delim(clusterFile, as.is=T, header=F,
                  col.names=c("coord", "clipped", "counts", "clipped.consensus", "anchored.consensus"))

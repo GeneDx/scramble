@@ -12,8 +12,8 @@ get_score = function(right_score, left_score){
 }
 ##############################
 get_refs = function(fa, chrom, start, end){
-  if (missing(fa) | missing(chrom) | missing(start) | missing(end)) return(NULL)
-  if (! chrom %in% names(fa)) return(NULL)
+  if (missing(fa) | missing(chrom) | missing(start) | missing(end)) return('N')
+  if (! chrom %in% names(fa)) return('N')
   fa = fa[chrom]
   seq = subseq(fa, start=start, end=end)
   return(as.vector(seq))
@@ -40,9 +40,22 @@ make.vcf.header = function(fa, blastRef=None){
 ##############################
 write.scramble.vcf = function(winners, fa, meis=F){
 
+    # return empty fixed data when no variants found
+    if(nrow(winners) == 0){
+        fixed = data.frame('#CHROM' = character(),
+               POS = character(),
+               ID = character(),
+               REF = character(),
+               ALT = character(),
+               QUAL = character(),
+               FILTER = character(),
+               INFO = character(),
+               check.names = F)
+        return(fixed)
+    }
+
   #argument checks
   if (is.null(winners)) return(NULL)
-  if (nrow(winners) == 0) return(NULL)
 
   if(!meis){
     fixed = data.frame('#CHROM' = winners$CONTIG,
@@ -75,18 +88,6 @@ write.scramble.vcf = function(winners, fa, meis=F){
   }   
 
   vcf.cols = c('#CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO')
-  if(nrow(fixed) > 0){
-    return(fixed[,vcf.cols])
-  }else{
-    fixed = data.frame('#CHROM' = character(),
-               POS = character(),
-               ID = character(),
-               REF = character(),
-               ALT = character(),
-               QUAL = character(),
-               FILTER = character(),
-               INFO = character(),
-               check.names = F)
-    return(fixed)
-  }
+  return(fixed[,vcf.cols])
+
 }
